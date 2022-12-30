@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
@@ -21,12 +22,14 @@ import org.springframework.web.client.RestTemplate;
 import com.beneficiary.entity.Beneficiary;
 import com.beneficiary.exception.BeneficiaryAlreadyyExistException;
 import com.beneficiary.exception.BeneficiaryCreationException;
+import com.beneficiary.exception.BeneficiaryNotFoundException;
 import com.beneficiary.exception.RemitterLimitEndedException;
 import com.beneficiary.service.BeneficiaryService;
 import com.beneficiary.util.ApplicationConstants;
 
 @RestController
 @CrossOrigin(value = "http://localhost:4200/")
+@RequestMapping("/beneficiary")
 public class BeneficiaryController {
 
 	@Autowired
@@ -35,14 +38,13 @@ public class BeneficiaryController {
 	@Autowired
 	RestTemplate restTemplate;
 
-	@PostMapping("/beneficiary")
+	@PostMapping("")
 	public ResponseEntity<Beneficiary> createBeneficiary(@RequestBody Beneficiary beneficiary) {
 		Boolean result = false;
 		Beneficiary beneDetails = beneService.getBeneficiaryByAccountNumber(beneficiary.getAccountNumber());
 		if (beneDetails != null)
 			throw new BeneficiaryAlreadyyExistException(
 					"Beneficiary already found with account Number " + beneficiary.getAccountNumber());
-		System.out.println("here");
 		result = restTemplate.exchange(ApplicationConstants.UPDATE_MAX_LIMIT_URL + beneficiary.getCustomerId(),
 				HttpMethod.PUT, null, Boolean.class).getBody();
 		if (!result)
@@ -53,26 +55,26 @@ public class BeneficiaryController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(beneDetails);
 	}
 
-	@GetMapping("/beneficiary/accountnumber/{accountNumber}")
+	@GetMapping("/accountnumber/{accountNumber}")
 	public ResponseEntity<Beneficiary> searchBeneficiaryByAccountNumber(@PathVariable Long accountNumber) {
 		Beneficiary beneDetails = beneService.getBeneficiaryByAccountNumber(accountNumber);
 		if (beneDetails == null)
-			throw new NullPointerException("Beneficiary not found for accountNo:" + accountNumber);
+			throw new BeneficiaryNotFoundException("Beneficiary not found for accountNo:" + accountNumber);
 		return ResponseEntity.status(HttpStatus.OK).body(beneDetails);
 	}
 
-	@GetMapping("/beneficiary")
+	@GetMapping("")
 	public ResponseEntity<List<Beneficiary>> getAllBeneficiary() {
 		List<Beneficiary> beneDetailsList = beneService.getAllBeneficiary();
 		return ResponseEntity.status(HttpStatus.OK).body(beneDetailsList);
 	}
-	@GetMapping("/beneficiary/remitter/{customerId}")
+	@GetMapping("/remitter/{customerId}")
 	public ResponseEntity<List<Beneficiary>> getAllBeneficiaryUnderRemitter(@PathVariable int customerId) {
 		List<Beneficiary> beneDetailsList = beneService.getAllBeneficiaryUnderRemitter(customerId);
 		return ResponseEntity.status(HttpStatus.OK).body(beneDetailsList);
 	}
 
-	@PutMapping("/beneficiary/{accountNumber}")
+	@PutMapping("/{accountNumber}")
 	public ResponseEntity<Beneficiary> updateBeneficiaryByAccountNumber(@RequestBody Beneficiary beneficiary,
 			@PathVariable Long accountNumber) {
 		System.out.println(beneficiary);
@@ -81,20 +83,20 @@ public class BeneficiaryController {
 		return ResponseEntity.status(HttpStatus.OK).body(updatedBeneficiary);
 	}
 
-	@PutMapping("/beneficiary/creditAmount/{accountNumber}")
+	@PutMapping("/creditAmount/{accountNumber}")
 	public ResponseEntity<Boolean> updateBeneficiarAmountyByAccountNumber(@PathVariable Long accountNumber,
 			@RequestParam Double amount) {
 		System.out.println("account no:" + accountNumber + " amount:" + amount);
 		Boolean isCredited = beneService.updateAmountByAccountNumber(accountNumber, amount);
 		return ResponseEntity.status(HttpStatus.OK).body(isCredited);
 	}
-	@PutMapping("/beneficiary/debitTransactionLimit/{accountNumber}")
+	@PutMapping("/debitTransactionLimit/{accountNumber}")
 	public ResponseEntity<Integer> updateBeneficiarMaxTransferLimitByAccountNumber(@PathVariable Long accountNumber) {
 		int limit = beneService.updateMaxTransferLimitByAccountNumber(accountNumber);
 		return ResponseEntity.status(HttpStatus.OK).body(limit);
 	}
 
-	@DeleteMapping("/beneficiary/{accountNumber}")
+	@DeleteMapping("/{accountNumber}")
 	public ResponseEntity<Boolean> deleteBeneficiaryByAccountNumber(@PathVariable Long accountNumber) {
 		Boolean isDataExists = beneService.deleteBeneficiaryByAccountNumber(accountNumber);
 		if (!isDataExists)

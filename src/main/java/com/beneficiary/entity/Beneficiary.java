@@ -2,23 +2,18 @@ package com.beneficiary.entity;
 
 import java.util.Date;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import com.remitter.entity.Remitter;
-
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -32,8 +27,8 @@ public class Beneficiary {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int beneficiaryId;
 	
-//	@Email
-//	@NotNull
+	@Email
+	@NotNull
 	private String email;
 	
 	private String address;
@@ -41,8 +36,6 @@ public class Beneficiary {
 //	@Pattern(regexp = "^[a-zA-Z]+$",message = "name must be in characters only")
 	private String name;
 	
-//	@NotNull
-//	@Pattern(regexp = "^[0-9]+$",message = "name must be in characters only")
 	@Column(unique=true)
 	private Long accountNumber;
 	
@@ -50,7 +43,7 @@ public class Beneficiary {
 	
 	private int accountStatus;
 	
-//	@NotNull
+	@NotNull
 	@Column(columnDefinition="Decimal(10,2) default '0.00'")
 	private Double currentBalance;
 	

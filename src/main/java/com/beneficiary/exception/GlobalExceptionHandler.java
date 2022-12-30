@@ -17,6 +17,10 @@ public class GlobalExceptionHandler {
 	public ResponseEntity<String> handelException(NullPointerException ex) {
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("something went wrong, " + ex.getMessage());
 	}
+	@ExceptionHandler(BeneficiaryNotFoundException.class)
+	public ResponseEntity<String> handelException(BeneficiaryNotFoundException ex) {
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body("something went wrong, " + ex.getMessage());
+	}
 	@ExceptionHandler(BeneficiaryCreationException.class)
 	public ResponseEntity<String> handelException(BeneficiaryCreationException ex) {
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("something went wrong, " + ex.getMessage());
@@ -31,7 +35,6 @@ public class GlobalExceptionHandler {
 	public ResponseEntity<String> handelException(RemitterLimitEndedException ex) {
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("something went wrong,"+ ex.getMessage());
 	}
-	
 	
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	public ResponseEntity<List<String>> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {

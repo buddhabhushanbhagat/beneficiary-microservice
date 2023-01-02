@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.beneficiary.entity.Beneficiary;
+import com.beneficiary.exception.BeneficiaryNotFoundException;
 import com.beneficiary.repository.BeneficiaryRepository;
 import com.beneficiary.util.ApplicationConstants;
 
@@ -41,7 +42,7 @@ public class BeneficiaryServiceImpl implements BeneficiaryService {
 		// TODO Auto-generated method stub
 		Beneficiary oldBeneficiary = getBeneficiaryByAccountNumber(beneficiary.getAccountNumber());
 		if (oldBeneficiary == null)
-			throw new NullPointerException("Beneficiary not found with account number");
+			throw new BeneficiaryNotFoundException("Beneficiary accountvnot exists with account number "+beneficiary.getAccountNumber());
 		oldBeneficiary.setAccountStatus((beneficiary.getAccountStatus()));
 //		oldBeneficiary.setCurrentBalance(beneficiary.getCurrentBalance());
 		oldBeneficiary.setEmail(beneficiary.getEmail());
